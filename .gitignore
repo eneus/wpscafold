@@ -2,6 +2,7 @@
 # https://github.com/github/gitignore/blob/main/WordPress.gitignore
 .data
 .cache
+.env
 *._.DS_Store
 *.DS_Store
 # ---> Composer
@@ -10,7 +11,7 @@
 *xdebug.log
 *node_modules/
 /backend/web/themes/*/*.css.map
-.vscode
+
 # Core
 #
 # Note: if you want to stage/commit WP core files

@@ -73,7 +73,17 @@ back:
 		$(call php-0, apk add --no-cache ca-certificates $(ADDITIONAL_PHP_PACKAGES)); \
 	fi
 	@echo "Installing WordPress..."
+ifeq ($(strip $(COMPOSER)),yes)
+	@if [ -d "./vendor" ]; then \
+		echo "Vendor directory already exists, skipping composer install."; \
+	else \
+		echo "Run composer install..."; \
+		$(MAKE) composer_install; \
+	fi
 	$(call php, composer install --no-interaction --prefer-dist -o --no-dev)
+else ifeq ($(strip $(COMPOSER)),no)
+	$(call php, php -d memory_limit=512M /usr/local/bin/wp core download --path='./web' --force --version=$(WP_VERSION))
+endif
 
 ## Install WordPress
 si:
@@ -134,8 +144,8 @@ dev:
 	@$(call php-0, chmod +w $(CODE_BASE_DIR)/web/wp-content)
 ## Run WP-CLI command in PHP container. To pass arguments use double dash: "make wp -- -y"
 wp:
-	$(call php, $(filter-out "$@",$(MAKECMDGOALS)))
-	$(info "To pass arguments use double dash: "make wp -- -y"")
+	$(call php, sh -c '$(filter-out "$@",$(MAKECMDGOALS))')
+	$(info "To pass arguments use double dash: "make wp --" ")
 
 ## Restart all docker compose services
 restart:
